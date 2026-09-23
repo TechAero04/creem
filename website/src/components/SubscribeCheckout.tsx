@@ -121,10 +121,10 @@ export function SubscribeCheckout({ plan, initialBilling, initialCurrency }: { p
             href={appLinks.signUp(plan.id)}
             className="mt-7 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-ember to-flame py-3.5 text-sm font-bold text-ink transition hover:brightness-105"
           >
-            Create my workspace <ArrowRight className="h-4 w-4" />
+            {appLinks.isPublic ? "Create my workspace" : "Request this plan"} <ArrowRight className="h-4 w-4" />
           </a>
           <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-paper/45">
-            <Lock className="h-3.5 w-3.5" /> Cancel anytime during the trial
+            <Lock className="h-3.5 w-3.5" /> {appLinks.isPublic ? "Cancel anytime during the trial" : "We set your workspace up with you"}
           </p>
           <p className="mt-3 text-center text-xs leading-relaxed text-paper/45">
             By continuing you agree to our{" "}

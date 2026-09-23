@@ -4,7 +4,7 @@ import { BookOpen, Inbox, LogOut, Mail, MessageCircle, Phone, Trophy, UserCheck 
 import { Logo } from "@/components/Logo";
 import { adminEnabled, isAdmin } from "@/lib/admin-auth";
 import { WEBHOOK_URL, fileStorageAvailable, listLeads, type Lead, type LeadStatus } from "@/lib/leads";
-import { APP_URL } from "@/lib/site";
+import { appLinks } from "@/lib/site";
 import { login, logout, updateStatus } from "./actions";
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false, follow: false } };
@@ -114,9 +114,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <p className="mt-2 text-ink/60">Everyone who contacted you through the website. Newest first.</p>
         </div>
         <div className="flex gap-2">
-          <a href={`${APP_URL}/sign-in`} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-semibold hover:border-ink/35">
-            Open the platform
-          </a>
+          {appLinks.isPublic && (
+            <a href={appLinks.signIn} className="rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-semibold hover:border-ink/35">
+              Open the platform
+            </a>
+          )}
           <form action={logout}>
             <button type="submit" className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-ink/60 hover:text-ink">
               <LogOut className="h-4 w-4" /> Sign out

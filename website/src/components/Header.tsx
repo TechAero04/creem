@@ -43,9 +43,11 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden items-center gap-2 lg:flex">
-          <a href={appLinks.signIn} className="rounded-full px-4 py-2 text-sm font-medium text-ink/75 hover:text-ink">
-            Sign in
-          </a>
+          {appLinks.isPublic && (
+            <a href={appLinks.signIn} className="rounded-full px-4 py-2 text-sm font-medium text-ink/75 hover:text-ink">
+              Sign in
+            </a>
+          )}
           <Link href="/contact" className="rounded-full bg-gradient-to-r from-flame-deep to-flame px-5 py-2 text-sm font-semibold text-white shadow-md shadow-flame/25 transition hover:brightness-110">
             Talk to us
           </Link>
@@ -69,10 +71,12 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <a href={appLinks.signIn} className="rounded-full border border-ink/15 py-3 text-center text-sm font-semibold">
-              Sign in
-            </a>
+          <div className={"mt-5 grid gap-3 " + (appLinks.isPublic ? "grid-cols-2" : "grid-cols-1")}>
+            {appLinks.isPublic && (
+              <a href={appLinks.signIn} className="rounded-full border border-ink/15 py-3 text-center text-sm font-semibold">
+                Sign in
+              </a>
+            )}
             <Link href="/contact" onClick={() => setOpen(false)} className="rounded-full bg-gradient-to-r from-flame-deep to-flame py-3 text-center text-sm font-semibold text-white">
               Talk to us
             </Link>

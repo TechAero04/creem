@@ -26,7 +26,7 @@ const COLUMNS = [
       { label: "Guide for team members", href: "/guide?role=member" },
       { label: "Guide for admins", href: "/guide?role=admin" },
       { label: "Contact us", href: "/contact" },
-      { label: "Sign in", href: appLinks.signIn },
+      ...(appLinks.isPublic ? [{ label: "Sign in", href: appLinks.signIn }] : []),
       { label: SALES_EMAIL, href: `mailto:${SALES_EMAIL}` },
     ],
   },

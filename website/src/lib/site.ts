@@ -1,4 +1,7 @@
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:4200";
+// The platform is only reachable when it is hosted somewhere public. Until then, sign-in
+// and sign-up buttons lead to the contact page instead of an address visitors cannot open.
+export const APP_IS_PUBLIC = APP_URL.startsWith("http") && !/localhost|127.0.0.1|0.0.0.0/.test(APP_URL);
 export const SALES_EMAIL = process.env.NEXT_PUBLIC_SALES_EMAIL ?? "sales@deepshikha.ai";
 
 export const COMPANY = "Deepshikha IT Consultancy";
@@ -9,8 +12,10 @@ export const TAGLINE = "Your AI workforce for business operations.";
 export const INTEGRATION_COUNT = "700+";
 
 export const appLinks = {
-  signIn: `${APP_URL}/sign-in`,
-  signUp: (plan?: string) => `${APP_URL}/sign-up${plan ? `?plan=${plan}` : ""}`,
+  isPublic: APP_IS_PUBLIC,
+  signIn: APP_IS_PUBLIC ? `${APP_URL}/sign-in` : "/contact",
+  signUp: (plan?: string) =>
+    APP_IS_PUBLIC ? `${APP_URL}/sign-up${plan ? `?plan=${plan}` : ""}` : `/contact${plan ? `?plan=${plan}` : ""}`,
 };
 
 export const salesMailto = (subject: string) => `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(subject)}`;
