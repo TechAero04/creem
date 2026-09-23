@@ -18,12 +18,16 @@ In the Vercel project settings:
 | Setting | Value |
 | --- | --- |
 | Root Directory | `website` |
-| Framework preset | Next.js |
-| Build command | `npm run build` (default) |
-| Install command | `npm install` (default) |
+| Include source files outside of the Root Directory | off |
 
 Setting the Root Directory is required. The repository root is the automation platform's
 monorepo and has no build script, so a deployment from the root fails.
+
+The framework, install command and build command come from `website/vercel.json`, which is
+committed. It exists because Vercel otherwise detects the monorepo's `turbo.json` and bun
+settings at the repository root and tries to run `bun install` and `turbo run build`, which
+fails with "No locally installed 'turbo' found in your repo". If you override the install or
+build command in the Vercel dashboard, leave both fields empty so `vercel.json` stays in charge.
 
 ## Environment variables
 
