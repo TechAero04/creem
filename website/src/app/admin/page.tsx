@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BookOpen, Inbox, LogOut, Mail, MessageCircle, Phone, Trophy, UserCheck } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { adminEnabled, isAdmin } from "@/lib/admin-auth";
-import { listLeads, type Lead, type LeadStatus } from "@/lib/leads";
+import { WEBHOOK_URL, fileStorageAvailable, listLeads, type Lead, type LeadStatus } from "@/lib/leads";
 import { APP_URL } from "@/lib/site";
 import { login, logout, updateStatus } from "./actions";
 
@@ -124,6 +124,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           </form>
         </div>
       </div>
+
+      {!fileStorageAvailable() && (
+        <div className="mt-8 rounded-[20px] border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
+          <p className="font-semibold">This site is running on a serverless host, so enquiries are not stored here.</p>
+          <p className="mt-1.5">
+            {WEBHOOK_URL
+              ? "New enquiries are forwarded to your configured webhook (LEADS_WEBHOOK_URL). Check that destination for new messages."
+              : "Set a LEADS_WEBHOOK_URL environment variable so enquiries are forwarded somewhere you can read them, or nothing will be delivered."}
+          </p>
+        </div>
+      )}
 
       <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[

@@ -21,6 +21,20 @@ export interface Lead {
 const DATA_DIR = process.env.LEADS_DIR ?? path.join(process.cwd(), "data");
 const FILE = path.join(DATA_DIR, "leads.json");
 
+// Serverless hosts (Vercel, Netlify, Lambda) have a read-only filesystem, so file
+// storage cannot be used there. Set LEADS_WEBHOOK_URL to forward enquiries instead.
+export const WEBHOOK_URL = process.env.LEADS_WEBHOOK_URL ?? "";
+export const fileStorageAvailable = () => !process.env.VERCEL && !process.env.NETLIFY && !process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+export async function sendToWebhook(lead: Omit<Lead, "id" | "createdAt" | "status">) {
+  const res = await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...lead, source: "deepshikha-website", receivedAt: new Date().toISOString() }),
+  });
+  if (!res.ok) throw new Error(`Webhook responded with ${res.status}`);
+}
+
 let queue: Promise<unknown> = Promise.resolve();
 function serialized<T>(fn: () => Promise<T>): Promise<T> {
   const next = queue.then(fn, fn);

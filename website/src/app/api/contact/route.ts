@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addLead } from "@/lib/leads";
+import { WEBHOOK_URL, addLead, fileStorageAvailable, sendToWebhook } from "@/lib/leads";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONTACT_METHODS = ["email", "phone", "whatsapp"] as const;
@@ -31,6 +31,37 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Please add a phone number so we can call or WhatsApp you." }, { status: 400 });
   }
 
-  await addLead({ name, email, phone, company, interest, message, preferredContact: preferred });
+  const lead = { name, email, phone, company, interest, message, preferredContact: preferred };
+  let delivered = false;
+  const failures: string[] = [];
+
+  if (WEBHOOK_URL) {
+    try {
+      await sendToWebhook(lead);
+      delivered = true;
+    } catch (err) {
+      failures.push(`webhook: ${err instanceof Error ? err.message : "failed"}`);
+    }
+  }
+
+  if (fileStorageAvailable()) {
+    try {
+      await addLead(lead);
+      delivered = true;
+    } catch (err) {
+      failures.push(`file: ${err instanceof Error ? err.message : "failed"}`);
+    }
+  } else if (!WEBHOOK_URL) {
+    failures.push("no storage configured: set LEADS_WEBHOOK_URL for serverless hosting");
+  }
+
+  if (!delivered) {
+    console.error("[contact] enquiry could not be stored", { failures, email });
+    return NextResponse.json(
+      { error: "Sorry, we couldn't send your message right now. Please email us directly and we'll reply the same way." },
+      { status: 503 }
+    );
+  }
+
   return NextResponse.json({ ok: true });
 }
