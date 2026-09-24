@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Clock, Loader2, Mail, MessageCircle, Phone } from "lucide-react";
 import clsx from "clsx";
 import { OFFICE_HOURS, PHONE_NUMBER, SALES_EMAIL, phoneLink, whatsappLink } from "@/lib/site";
@@ -9,6 +9,15 @@ const FIELD =
   "w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-[15px] outline-none transition placeholder:text-ink/35 focus:border-flame focus:ring-2 focus:ring-flame/20";
 
 const INTERESTS = ["Not sure yet — help me choose", "Starter plan", "Growth plan", "Scale plan", "Enterprise", "Build it for me (services)"];
+
+const IS_STATIC = process.env.NEXT_PUBLIC_STATIC === "1";
+const CONTACT_WEBHOOK = process.env.NEXT_PUBLIC_CONTACT_WEBHOOK ?? "";
+const PLAN_INTEREST: Record<string, string> = {
+  starter: "Starter plan",
+  growth: "Growth plan",
+  scale: "Scale plan",
+  enterprise: "Enterprise",
+};
 
 type Preferred = "email" | "phone" | "whatsapp";
 
@@ -24,25 +33,63 @@ export function ContactSection({ defaultInterest }: { defaultInterest?: string }
     website: "",
   });
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [sentBy, setSentBy] = useState<"stored" | "email">("stored");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const plan = new URLSearchParams(window.location.search).get("plan");
+    const interest = plan && PLAN_INTEREST[plan];
+    if (interest) setForm((f) => ({ ...f, interest }));
+  }, []);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const openEmailApp = () => {
+    const body = [
+      `Name: ${form.name}`,
+      `Work email: ${form.email}`,
+      `Phone / WhatsApp: ${form.phone || "-"}`,
+      `Company: ${form.company || "-"}`,
+      `Interested in: ${form.interest}`,
+      `Preferred contact: ${form.preferredContact}`,
+      "",
+      form.message,
+    ].join("\n");
+    window.location.href = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(`Automation enquiry — ${form.company || form.name}`)}&body=${encodeURIComponent(body)}`;
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setState("sending");
     setError("");
+
+    if (IS_STATIC && !CONTACT_WEBHOOK) {
+      openEmailApp();
+      setSentBy("email");
+      setState("sent");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(IS_STATIC ? CONTACT_WEBHOOK : "/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(IS_STATIC ? { ...form, source: "deepshikha-website" } : form),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error ?? "Something went wrong. Please try again.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Something went wrong. Please try again.");
+      }
+      setSentBy("stored");
       setState("sent");
     } catch (err) {
+      if (IS_STATIC) {
+        openEmailApp();
+        setSentBy("email");
+        setState("sent");
+        return;
+      }
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setState("error");
     }
@@ -95,8 +142,9 @@ export function ContactSection({ defaultInterest }: { defaultInterest?: string }
           <CheckCircle2 className="h-14 w-14 text-emerald-600" />
           <h3 className="mt-5 text-2xl font-semibold">Thanks, {form.name.split(" ")[0]}! We&rsquo;ve got your message.</h3>
           <p className="mt-3 max-w-sm text-ink/60">
-            Someone from our team will contact you by {form.preferredContact === "email" ? "email" : form.preferredContact === "phone" ? "phone" : "WhatsApp"}{" "}
-            within one business day.
+            {sentBy === "email"
+              ? "We've opened your email app with your details filled in — press send and we'll reply within one business day."
+              : `Someone from our team will contact you by ${form.preferredContact === "email" ? "email" : form.preferredContact === "phone" ? "phone" : "WhatsApp"} within one business day.`}
           </p>
         </div>
       ) : (

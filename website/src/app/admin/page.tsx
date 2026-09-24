@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { BookOpen, Inbox, LogOut, Mail, MessageCircle, Phone, Trophy, UserCheck } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { adminEnabled, isAdmin } from "@/lib/admin-auth";

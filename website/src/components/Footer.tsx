@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { Logo } from "./Logo";
 import { COMPANY, SALES_EMAIL, TAGLINE, appLinks } from "@/lib/site";
 

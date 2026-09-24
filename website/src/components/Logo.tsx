@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import clsx from "clsx";
 
 export function FlameMark({ className, animated = false }: { className?: string; animated?: boolean }) {

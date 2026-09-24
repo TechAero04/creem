@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, ShieldCheck, User } from "lucide-react";
 import clsx from "clsx";
 
@@ -34,6 +34,11 @@ export const GUIDE: Record<Role, { title: string; intro: string; steps: { t: str
 
 export function RoleGuide({ initial = "member" }: { initial?: Role }) {
   const [role, setRole] = useState<Role>(initial);
+
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("role");
+    if (wanted === "admin" || wanted === "member") setRole(wanted);
+  }, []);
   const guide = GUIDE[role];
 
   return (

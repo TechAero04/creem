@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { LegalPage, type LegalSection } from "@/components/LegalPage";
 import { LEGAL, PRODUCT } from "@/lib/site";
 

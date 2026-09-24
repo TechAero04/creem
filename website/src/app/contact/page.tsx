@@ -2,17 +2,13 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ContactSection } from "@/components/ContactSection";
-import { PLANS } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact us",
   description: "Talk to the Deepshikha AI team about automating your business. Free consultation, reply within one business day.",
 };
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
-  const { plan: planId } = await searchParams;
-  const plan = PLANS.find((p) => p.id === planId);
-  const interest = plan ? (plan.id === "enterprise" ? "Enterprise" : `${plan.name} plan`) : undefined;
+export default function ContactPage() {
   return (
     <>
       <Header />
@@ -26,7 +22,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
             </p>
           </div>
           <div className="mt-14">
-            <ContactSection defaultInterest={interest} />
+            <ContactSection />
           </div>
         </div>
       </main>

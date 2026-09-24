@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { LEGAL } from "@/lib/site";

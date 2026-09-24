@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { SmartLink as Link } from "@/components/SmartLink";
+import { useEffect, useState } from "react";
 import { ArrowRight, Check, Lock } from "lucide-react";
 import clsx from "clsx";
 import { BillingControls } from "./PricingPlans";
@@ -15,9 +15,15 @@ function trialEndDate() {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 }
 
-export function SubscribeCheckout({ plan, initialBilling, initialCurrency }: { plan: Plan; initialBilling: Billing; initialCurrency: Currency }) {
-  const [billing, setBilling] = useState<Billing>(initialBilling);
-  const [currency, setCurrency] = useState<Currency>(initialCurrency);
+export function SubscribeCheckout({ plan }: { plan: Plan }) {
+  const [billing, setBilling] = useState<Billing>("annual");
+  const [currency, setCurrency] = useState<Currency>("USD");
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("billing") === "monthly") setBilling("monthly");
+    if (q.get("currency") === "INR") setCurrency("INR");
+  }, []);
 
   const monthly = plan.price![currency][billing];
   const charge = billing === "annual" ? monthly * 12 : monthly;

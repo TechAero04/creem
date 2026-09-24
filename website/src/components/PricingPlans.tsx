@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import clsx from "clsx";

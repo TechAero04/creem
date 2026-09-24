@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SmartLink as Link } from "@/components/SmartLink";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { RoleGuide, type Role } from "@/components/RoleGuide";
+import { RoleGuide } from "@/components/RoleGuide";
 import { Faq } from "@/components/Faq";
 
 export const metadata: Metadata = {
@@ -19,8 +19,7 @@ const WORDS = [
   { q: "Run", a: "One time an automation happened. Every run is saved so you can see exactly what it did." },
 ];
 
-export default async function GuidePage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
-  const role: Role = (await searchParams).role === "admin" ? "admin" : "member";
+export default function GuidePage() {
   return (
     <>
       <Header />
@@ -30,7 +29,7 @@ export default async function GuidePage({ searchParams }: { searchParams: Promis
           <h1 className="mt-4 text-center font-display text-5xl font-medium tracking-tight sm:text-6xl">How to use Deepshikha AI</h1>
           <p className="mx-auto mt-5 max-w-xl text-center text-lg text-ink/60">Choose your role to see the steps that matter to you.</p>
           <div className="mt-12">
-            <RoleGuide key={role} initial={role} />
+            <RoleGuide />
           </div>
         </section>
 
