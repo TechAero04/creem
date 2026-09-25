@@ -2,14 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { endAdminSession, isAdmin, passwordMatches, startAdminSession } from "@/lib/admin-auth";
+import { credentialsMatch, endAdminSession, isAdmin, startAdminSession } from "@/lib/admin-auth";
 import { setLeadStatus, type LeadStatus } from "@/lib/leads";
 
 const STATUSES: LeadStatus[] = ["new", "contacted", "won", "closed"];
 
 export async function login(formData: FormData) {
+  const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
-  if (!passwordMatches(password)) redirect("/admin?error=1");
+  if (!credentialsMatch({ username, password })) redirect("/admin?error=1");
   await startAdminSession();
   redirect("/admin");
 }

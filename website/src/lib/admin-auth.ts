@@ -3,12 +3,13 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
 export const ADMIN_COOKIE = "ds_admin";
+const USERNAME = process.env.ADMIN_USERNAME ?? "admin";
 const PASSWORD = process.env.ADMIN_PASSWORD ?? "";
 
 export const adminEnabled = () => PASSWORD.length >= 8;
 
 function sessionToken() {
-  return createHmac("sha256", PASSWORD).update("deepshikha-admin-session").digest("hex");
+  return createHmac("sha256", PASSWORD).update(`deepshikha-admin-session:${USERNAME}`).digest("hex");
 }
 
 function safeEqual(a: string, b: string) {
@@ -17,8 +18,10 @@ function safeEqual(a: string, b: string) {
   return ab.length === bb.length && timingSafeEqual(ab, bb);
 }
 
-export function passwordMatches(input: string) {
-  return adminEnabled() && safeEqual(input, PASSWORD);
+export function credentialsMatch({ username, password }: { username: string; password: string }) {
+  const usernameOk = safeEqual(username.trim().toLowerCase(), USERNAME.trim().toLowerCase());
+  const passwordOk = safeEqual(password, PASSWORD);
+  return adminEnabled() && usernameOk && passwordOk;
 }
 
 export async function isAdmin() {

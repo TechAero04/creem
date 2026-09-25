@@ -40,7 +40,7 @@ function SetupNotice() {
         <h1 className="text-2xl font-semibold">Admin area is switched off</h1>
         <p className="mt-3 text-ink/65">
           To turn it on, set an <code className="rounded bg-sand px-1.5 py-0.5 text-sm">ADMIN_PASSWORD</code> environment variable (at least 8
-          characters) for the website and restart it.
+          characters) for the website, optionally <code className="rounded bg-sand px-1.5 py-0.5 text-sm">ADMIN_USERNAME</code>, and restart it.
         </p>
       </div>
     </Shell>
@@ -54,17 +54,27 @@ function LoginForm({ error }: { error: boolean }) {
         <h1 className="text-2xl font-semibold">Admin sign in</h1>
         <p className="mt-2 text-sm text-ink/60">See and follow up on enquiries from the website.</p>
         <label className="mt-6 grid gap-1.5 text-sm font-medium">
+          Username
+          <input
+            name="username"
+            type="text"
+            required
+            autoFocus
+            autoComplete="username"
+            className="rounded-xl border border-ink/15 px-4 py-3 outline-none focus:border-flame focus:ring-2 focus:ring-flame/20"
+          />
+        </label>
+        <label className="mt-4 grid gap-1.5 text-sm font-medium">
           Password
           <input
             name="password"
             type="password"
             required
-            autoFocus
             autoComplete="current-password"
             className="rounded-xl border border-ink/15 px-4 py-3 outline-none focus:border-flame focus:ring-2 focus:ring-flame/20"
           />
         </label>
-        {error && <p className="mt-3 text-sm font-medium text-red-700">That password is not correct.</p>}
+        {error && <p className="mt-3 text-sm font-medium text-red-700">That username or password is not correct.</p>}
         <button type="submit" className="mt-6 w-full rounded-full bg-ink py-3 text-sm font-semibold text-paper hover:bg-flame-deep">
           Sign in
         </button>
