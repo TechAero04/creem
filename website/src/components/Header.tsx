@@ -8,8 +8,9 @@ import { Logo } from "./Logo";
 import { appLinks } from "@/lib/site";
 
 const NAV = [
-  { label: "What it does", href: "/#product" },
-  { label: "How it works", href: "/#how" },
+  { label: "Product", href: "/#product" },
+  { label: "Apps", href: "/#integrations" },
+  { label: "Security", href: "/#security" },
   { label: "Guide", href: "/guide" },
   { label: "Pricing", href: "/pricing" },
   { label: "Enterprise", href: "/enterprise" },
@@ -48,9 +49,12 @@ export function Header() {
               Sign in
             </a>
           )}
-          <Link href="/contact" className="rounded-full bg-gradient-to-r from-flame-deep to-flame px-5 py-2 text-sm font-semibold text-white shadow-md shadow-flame/25 transition hover:brightness-110">
-            Talk to us
+          <Link href="/contact" className="rounded-full border border-ink/15 bg-white px-4 py-2 text-sm font-semibold text-ink/80 transition hover:border-ink/35 hover:text-ink">
+            Talk to sales
           </Link>
+          <a href={appLinks.isPublic ? appLinks.signUp() : "/#contact"} className="rounded-full bg-gradient-to-r from-flame-deep to-flame px-5 py-2 text-sm font-semibold text-white shadow-md shadow-flame/25 transition hover:brightness-110">
+            Get started
+          </a>
         </div>
         <button
           type="button"
@@ -70,16 +74,23 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-          </nav>
-          <div className={"mt-5 grid gap-3 " + (appLinks.isPublic ? "grid-cols-2" : "grid-cols-1")}>
             {appLinks.isPublic && (
-              <a href={appLinks.signIn} className="rounded-full border border-ink/15 py-3 text-center text-sm font-semibold">
+              <a href={appLinks.signIn} className="border-b border-ink/5 py-3.5 font-medium text-ink/80">
                 Sign in
               </a>
             )}
-            <Link href="/contact" onClick={() => setOpen(false)} className="rounded-full bg-gradient-to-r from-flame-deep to-flame py-3 text-center text-sm font-semibold text-white">
-              Talk to us
+          </nav>
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <Link href="/contact" onClick={() => setOpen(false)} className="rounded-full border border-ink/15 py-3 text-center text-sm font-semibold">
+              Talk to sales
             </Link>
+            <a
+              href={appLinks.isPublic ? appLinks.signUp() : "/#contact"}
+              onClick={() => setOpen(false)}
+              className="rounded-full bg-gradient-to-r from-flame-deep to-flame py-3 text-center text-sm font-semibold text-white"
+            >
+              Get started
+            </a>
           </div>
         </div>
       )}

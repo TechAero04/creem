@@ -6,10 +6,21 @@ const COLUMNS = [
   {
     title: "Product",
     links: [
-      { label: "What it does", href: "/#product" },
-      { label: "How it works", href: "/#how" },
+      { label: "The workspace", href: "/#product" },
+      { label: "AI assistants", href: "/#agents" },
+      { label: "The builder", href: "/#how" },
       { label: "Apps it works with", href: "/#integrations" },
-      { label: "Security", href: "/#security" },
+      { label: "Security & control", href: "/#security" },
+    ],
+  },
+  {
+    title: "For your team",
+    links: [
+      { label: "Sales", href: "/#departments" },
+      { label: "Support", href: "/#departments" },
+      { label: "Accounts", href: "/#departments" },
+      { label: "Operations", href: "/#departments" },
+      { label: "IT", href: "/#departments" },
     ],
   },
   {
@@ -18,6 +29,7 @@ const COLUMNS = [
       { label: "Pricing", href: "/pricing" },
       { label: "Enterprise", href: "/enterprise" },
       { label: "Done-for-you services", href: "/enterprise#services" },
+      { label: "Book a free call", href: "/contact" },
     ],
   },
   {
@@ -36,7 +48,7 @@ export function Footer() {
   return (
     <footer className="bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-[1.5fr_repeat(3,1fr)]">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div className="max-w-xs">
             <Logo inverted />
             <p className="mt-4 font-display text-lg italic text-paper/80">{TAGLINE}</p>
