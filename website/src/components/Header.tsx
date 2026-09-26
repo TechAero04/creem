@@ -7,6 +7,8 @@ import clsx from "clsx";
 import { Logo } from "./Logo";
 import { appLinks } from "@/lib/site";
 
+const MOBILE_MENU_ID = "mobile-menu";
+
 const NAV = [
   { label: "Product", href: "/#product" },
   { label: "Apps", href: "/#integrations" },
@@ -25,6 +27,15 @@ export function Header() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      if (wide.matches) setOpen(false);
+    };
+    wide.addEventListener("change", onChange);
+    return () => wide.removeEventListener("change", onChange);
   }, []);
 
   return (
@@ -60,34 +71,44 @@ export function Header() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
+          aria-controls={MOBILE_MENU_ID}
           aria-label={open ? "Close menu" : "Open menu"}
-          className="grid h-10 w-10 place-items-center rounded-full hover:bg-ink/5 lg:hidden"
+          className="-mr-1.5 grid h-12 w-12 shrink-0 touch-manipulation place-items-center rounded-full text-ink hover:bg-ink/5 active:bg-ink/10 lg:hidden"
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
       {open && (
-        <div className="border-t border-ink/10 px-4 pb-6 lg:hidden">
+        <div id={MOBILE_MENU_ID} className="border-t border-ink/10 bg-paper px-4 pb-6 lg:hidden">
           <nav aria-label="Mobile" className="flex flex-col">
             {NAV.map((n) => (
-              <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="border-b border-ink/5 py-3.5 font-medium text-ink/80">
+              <Link
+                key={n.href}
+                href={n.href}
+                onClick={() => setOpen(false)}
+                className="touch-manipulation border-b border-ink/5 py-4 font-medium text-ink/80 active:text-flame-deep"
+              >
                 {n.label}
               </Link>
             ))}
             {appLinks.isPublic && (
-              <a href={appLinks.signIn} className="border-b border-ink/5 py-3.5 font-medium text-ink/80">
+              <a href={appLinks.signIn} className="touch-manipulation border-b border-ink/5 py-4 font-medium text-ink/80 active:text-flame-deep">
                 Sign in
               </a>
             )}
           </nav>
           <div className="mt-5 grid grid-cols-2 gap-3">
-            <Link href="/contact" onClick={() => setOpen(false)} className="rounded-full border border-ink/15 py-3 text-center text-sm font-semibold">
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="touch-manipulation rounded-full border border-ink/15 py-3.5 text-center text-sm font-semibold"
+            >
               Talk to sales
             </Link>
             <a
               href={appLinks.isPublic ? appLinks.signUp() : "/#contact"}
               onClick={() => setOpen(false)}
-              className="rounded-full bg-gradient-to-r from-flame-deep to-flame py-3 text-center text-sm font-semibold text-white"
+              className="touch-manipulation rounded-full bg-gradient-to-r from-flame-deep to-flame py-3.5 text-center text-sm font-semibold text-white"
             >
               Get started
             </a>
