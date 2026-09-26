@@ -4,7 +4,7 @@ import { SmartLink as Link } from "@/components/SmartLink";
 import { useState } from "react";
 import { Check } from "lucide-react";
 import clsx from "clsx";
-import { PLANS, formatMoney, type Billing, type Currency } from "@/lib/site";
+import { ANNUAL_SAVING_LABEL, BILLED_CURRENCY, PLANS, amountCharged, formatMoney, monthlyEquivalent, type Billing, type Currency } from "@/lib/site";
 
 export function Segmented<T extends string>({
   label,
@@ -50,32 +50,39 @@ export function BillingControls({
   setCurrency: (c: Currency) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-      <Segmented
-        label="Billing period"
-        value={billing}
-        onChange={setBilling}
-        options={[
-          {
-            value: "annual",
-            label: (
-              <span className="flex items-center gap-2">
-                Annual <span className="rounded-full bg-ember px-1.5 py-0.5 text-[10px] font-bold text-ink">Save 17%</span>
-              </span>
-            ),
-          },
-          { value: "monthly", label: "Monthly" },
-        ]}
-      />
-      <Segmented
-        label="Currency"
-        value={currency}
-        onChange={setCurrency}
-        options={[
-          { value: "USD", label: "USD $" },
-          { value: "INR", label: "INR ₹" },
-        ]}
-      />
+    <div>
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <Segmented
+          label="Billing period"
+          value={billing}
+          onChange={setBilling}
+          options={[
+            {
+              value: "annual",
+              label: (
+                <span className="flex items-center gap-2">
+                  Annual <span className="rounded-full bg-ember px-1.5 py-0.5 text-[10px] font-bold text-ink">{ANNUAL_SAVING_LABEL}</span>
+                </span>
+              ),
+            },
+            { value: "monthly", label: "Monthly" },
+          ]}
+        />
+        <Segmented
+          label="Currency"
+          value={currency}
+          onChange={setCurrency}
+          options={[
+            { value: "USD", label: "USD $" },
+            { value: "INR", label: "INR ₹" },
+          ]}
+        />
+      </div>
+      {currency !== BILLED_CURRENCY && (
+        <p className="mt-4 text-center text-xs text-ink/50">
+          Rupee amounts are a guide only. Payment is taken in {BILLED_CURRENCY}, so your bank&rsquo;s rate applies. GST is added for Indian customers.
+        </p>
+      )}
     </div>
   );
 }
@@ -90,7 +97,8 @@ export function PricingPlans() {
 
       <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {PLANS.map((plan) => {
-          const price = plan.price?.[currency][billing];
+          const shown = plan.price ? monthlyEquivalent({ price: plan.price, currency, billing }) : null;
+          const charged = plan.price ? amountCharged({ price: plan.price, currency, billing }) : null;
           const featured = plan.featured;
           const href = plan.price ? `/subscribe/${plan.id}?billing=${billing}&currency=${currency}` : "/contact?plan=enterprise";
           return (
@@ -110,14 +118,14 @@ export function PricingPlans() {
               <p className={clsx("mt-2 min-h-[48px] text-sm leading-relaxed", featured ? "text-paper/60" : "text-ink/55")}>{plan.audience}</p>
 
               <div className="mt-6 min-h-[82px]">
-                {price != null ? (
+                {shown != null && charged != null ? (
                   <>
                     <div className="flex items-baseline gap-1.5">
-                      <span className="font-display text-[2.6rem] font-medium leading-none tracking-tight">{formatMoney(price, currency)}</span>
+                      <span className="font-display text-[2.6rem] font-medium leading-none tracking-tight">{formatMoney(shown, currency)}</span>
                       <span className={clsx("text-sm", featured ? "text-paper/55" : "text-ink/45")}>/ mo</span>
                     </div>
                     <p className={clsx("mt-2 text-xs", featured ? "text-paper/45" : "text-ink/45")}>
-                      {billing === "annual" ? `${formatMoney(price * 12, currency)} billed yearly` : "Billed monthly · cancel anytime"}
+                      {billing === "annual" ? `${formatMoney(charged, currency)} billed yearly` : "Billed monthly · cancel anytime"}
                     </p>
                   </>
                 ) : (

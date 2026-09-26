@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Check, Lock } from "lucide-react";
 import clsx from "clsx";
 import { BillingControls } from "./PricingPlans";
-import { PLANS, appLinks, formatMoney, type Billing, type Currency, type Plan } from "@/lib/site";
+import { BILLED_CURRENCY, PLANS, amountCharged, annualSaving, appLinks, formatMoney, monthlyEquivalent, type Billing, type Currency, type Plan } from "@/lib/site";
 
 const TRIAL_DAYS = 14;
 
@@ -25,8 +25,9 @@ export function SubscribeCheckout({ plan }: { plan: Plan }) {
     if (q.get("currency") === "INR") setCurrency("INR");
   }, []);
 
-  const monthly = plan.price![currency][billing];
-  const charge = billing === "annual" ? monthly * 12 : monthly;
+  const price = plan.price!;
+  const monthly = monthlyEquivalent({ price, currency, billing });
+  const charge = amountCharged({ price, currency, billing });
   const taxNote = currency === "INR" ? "+ 18% GST" : "+ applicable taxes";
   const others = PLANS.filter((p) => p.price && p.id !== plan.id);
 
@@ -111,7 +112,13 @@ export function SubscribeCheckout({ plan }: { plan: Plan }) {
             {billing === "annual" && (
               <div className="flex justify-between text-ember">
                 <dt>You save vs monthly</dt>
-                <dd className="font-semibold">{formatMoney((plan.price![currency].monthly - monthly) * 12, currency)} / yr</dd>
+                <dd className="font-semibold">{formatMoney(annualSaving({ price, currency }), currency)} / yr</dd>
+              </div>
+            )}
+            {currency !== BILLED_CURRENCY && (
+              <div className="flex justify-between">
+                <dt className="text-paper/60">Charged in {BILLED_CURRENCY}</dt>
+                <dd className="font-semibold">{formatMoney(amountCharged({ price, currency: BILLED_CURRENCY, billing }), BILLED_CURRENCY)}</dd>
               </div>
             )}
             <div className="flex justify-between">

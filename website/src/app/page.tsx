@@ -34,7 +34,7 @@ import {
   RolesWidget,
   SupportWidget,
 } from "@/components/ProductMocks";
-import { COMPANY, INTEGRATION_COUNT, PLANS, formatMoney, whatsappLink } from "@/lib/site";
+import { COMPANY, INTEGRATION_COUNT, PLANS, formatMoney, monthlyEquivalent, whatsappLink } from "@/lib/site";
 
 const APPS = [
   "Gmail", "Outlook", "WhatsApp", "Slack", "Microsoft Teams", "Google Sheets", "Google Drive", "Google Calendar",
@@ -410,11 +410,11 @@ export default function Home() {
                   </div>
                   <p className={`mt-1 text-sm ${p.featured ? "text-paper/60" : "text-ink/55"}`}>{p.audience}</p>
                   <p className="mt-6 font-display text-4xl">
-                    {formatMoney(p.price!.USD.annual, "USD")}
+                    {formatMoney(monthlyEquivalent({ price: p.price!, currency: "USD", billing: "annual" }), "USD")}
                     <span className={`font-sans text-sm ${p.featured ? "text-paper/55" : "text-ink/45"}`}> / month</span>
                   </p>
                   <p className={`text-xs ${p.featured ? "text-paper/45" : "text-ink/45"}`}>
-                    or {formatMoney(p.price!.INR.annual, "INR")} / month · billed yearly
+                    {formatMoney(p.price!.USD.annual, "USD")} billed yearly · or {formatMoney(p.price!.USD.monthly, "USD")} monthly
                   </p>
                   <p className={`mt-5 text-sm font-medium ${p.featured ? "text-paper/80" : "text-ink/75"}`}>
                     {p.limits.users} · {p.limits.activeFlows}

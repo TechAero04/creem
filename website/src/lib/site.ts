@@ -46,11 +46,19 @@ export type Currency = "USD" | "INR";
 export type Billing = "annual" | "monthly";
 export type PlanId = "starter" | "growth" | "scale" | "enterprise";
 
+export const BILLED_CURRENCY: Currency = "USD";
+export const USD_TO_INR = 84;
+
+export interface PlanPrice {
+  monthly: number;
+  annual: number;
+}
+
 export interface Plan {
   id: PlanId;
   name: string;
   audience: string;
-  price: Record<Currency, Record<Billing, number>> | null;
+  price: Record<Currency, PlanPrice> | null;
   enterpriseFrom?: Record<Currency, string>;
   limits: { users: string; activeFlows: string; projects: string; aiCredits: string };
   highlights: string[];
@@ -62,10 +70,7 @@ export const PLANS: Plan[] = [
     id: "starter",
     name: "Starter",
     audience: "For small teams automating their first few tasks.",
-    price: {
-      USD: { annual: 149, monthly: 179 },
-      INR: { annual: 11999, monthly: 14499 },
-    },
+    price: priceIn({ monthly: 199, annual: 1990 }),
     limits: { users: "5 team members", activeFlows: "10 live automations", projects: "1 workspace", aiCredits: "1,000 AI credits a month" },
     highlights: [
       "Automations run as often as needed",
@@ -80,10 +85,7 @@ export const PLANS: Plan[] = [
     id: "growth",
     name: "Growth",
     audience: "For growing businesses automating work across teams.",
-    price: {
-      USD: { annual: 499, monthly: 599 },
-      INR: { annual: 39999, monthly: 47999 },
-    },
+    price: priceIn({ monthly: 349, annual: 3490 }),
     limits: { users: "20 team members", activeFlows: "50 live automations", projects: "5 team workspaces", aiCredits: "10,000 AI credits a month" },
     highlights: [
       "Everything in Starter",
@@ -99,10 +101,7 @@ export const PLANS: Plan[] = [
     id: "scale",
     name: "Scale",
     audience: "For larger teams that need more control and volume.",
-    price: {
-      USD: { annual: 1290, monthly: 1549 },
-      INR: { annual: 104999, monthly: 124999 },
-    },
+    price: priceIn({ monthly: 499, annual: 4900 }),
     limits: { users: "75 team members", activeFlows: "200 live automations", projects: "20 team workspaces", aiCredits: "40,000 AI credits a month" },
     highlights: [
       "Everything in Growth",
@@ -132,6 +131,34 @@ export const PLANS: Plan[] = [
 ];
 
 export const getPlan = (id: string) => PLANS.find((p) => p.id === id);
+
+export function monthlyEquivalent({ price, currency, billing }: { price: Record<Currency, PlanPrice>; currency: Currency; billing: Billing }) {
+  const p = price[currency];
+  return billing === "annual" ? Math.round(p.annual / 12) : p.monthly;
+}
+
+export function amountCharged({ price, currency, billing }: { price: Record<Currency, PlanPrice>; currency: Currency; billing: Billing }) {
+  const p = price[currency];
+  return billing === "annual" ? p.annual : p.monthly;
+}
+
+export function annualSaving({ price, currency }: { price: Record<Currency, PlanPrice>; currency: Currency }) {
+  const p = price[currency];
+  return p.monthly * 12 - p.annual;
+}
+
+export const ANNUAL_SAVING_LABEL = "Save up to 18%";
+
+function usdToInr(usd: number) {
+  return Math.round((usd * USD_TO_INR) / 100) * 100;
+}
+
+function priceIn({ monthly, annual }: PlanPrice): Record<Currency, PlanPrice> {
+  return {
+    USD: { monthly, annual },
+    INR: { monthly: usdToInr(monthly), annual: usdToInr(annual) },
+  };
+}
 
 export function formatMoney(amount: number, currency: Currency) {
   return new Intl.NumberFormat(currency === "INR" ? "en-IN" : "en-US", {
