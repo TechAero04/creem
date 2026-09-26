@@ -117,15 +117,17 @@ export function PricingPlans() {
               <h3 className="text-lg font-semibold">{plan.name}</h3>
               <p className={clsx("mt-2 min-h-[48px] text-sm leading-relaxed", featured ? "text-paper/60" : "text-ink/55")}>{plan.audience}</p>
 
-              <div className="mt-6 min-h-[82px]">
+              <div className="mt-6 min-h-[104px]">
                 {shown != null && charged != null ? (
                   <>
                     <div className="flex items-baseline gap-1.5">
-                      <span className="font-display text-[2.6rem] font-medium leading-none tracking-tight">{formatMoney(shown, currency)}</span>
-                      <span className={clsx("text-sm", featured ? "text-paper/55" : "text-ink/45")}>/ mo</span>
+                      <span className="font-display text-[2.6rem] font-medium leading-none tracking-tight">{formatMoney(charged, currency)}</span>
+                      <span className={clsx("text-sm", featured ? "text-paper/55" : "text-ink/45")}>{billing === "annual" ? "/ yr" : "/ mo"}</span>
                     </div>
                     <p className={clsx("mt-2 text-xs", featured ? "text-paper/45" : "text-ink/45")}>
-                      {billing === "annual" ? `${formatMoney(charged, currency)} billed yearly` : "Billed monthly · cancel anytime"}
+                      {billing === "annual"
+                        ? `billed yearly · works out at ${formatMoney(shown, currency)} a month`
+                        : "Billed monthly · cancel anytime"}
                     </p>
                   </>
                 ) : (

@@ -98,13 +98,19 @@ export function SubscribeCheckout({ plan }: { plan: Plan }) {
               <p className="text-sm text-paper/55">{billing === "annual" ? "Billed yearly" : "Billed monthly"}</p>
             </div>
             <p className="text-right font-display text-2xl">
-              {formatMoney(monthly, currency)}
-              <span className="block font-sans text-xs text-paper/50">per month</span>
+              {formatMoney(charge, currency)}
+              <span className="block font-sans text-xs text-paper/50">{billing === "annual" ? "per year" : "per month"}</span>
             </p>
           </div>
           <dl className="space-y-3 py-5 text-sm">
+            {billing === "annual" && (
+              <div className="flex justify-between">
+                <dt className="text-paper/60">Works out at</dt>
+                <dd className="font-semibold">{formatMoney(monthly, currency)} / month</dd>
+              </div>
+            )}
             <div className="flex justify-between">
-              <dt className="text-paper/60">{billing === "annual" ? "Yearly charge after trial" : "Monthly charge after trial"}</dt>
+              <dt className="text-paper/60">{billing === "annual" ? "Charged yearly after trial" : "Charged monthly after trial"}</dt>
               <dd className="font-semibold">
                 {formatMoney(charge, currency)} <span className="font-normal text-paper/45">{taxNote}</span>
               </dd>

@@ -410,11 +410,12 @@ export default function Home() {
                   </div>
                   <p className={`mt-1 text-sm ${p.featured ? "text-paper/60" : "text-ink/55"}`}>{p.audience}</p>
                   <p className="mt-6 font-display text-4xl">
-                    {formatMoney(monthlyEquivalent({ price: p.price!, currency: "USD", billing: "annual" }), "USD")}
-                    <span className={`font-sans text-sm ${p.featured ? "text-paper/55" : "text-ink/45"}`}> / month</span>
+                    {formatMoney(p.price!.USD.annual, "USD")}
+                    <span className={`font-sans text-sm ${p.featured ? "text-paper/55" : "text-ink/45"}`}> / year</span>
                   </p>
                   <p className={`text-xs ${p.featured ? "text-paper/45" : "text-ink/45"}`}>
-                    {formatMoney(p.price!.USD.annual, "USD")} billed yearly · or {formatMoney(p.price!.USD.monthly, "USD")} monthly
+                    works out at {formatMoney(monthlyEquivalent({ price: p.price!, currency: "USD", billing: "annual" }), "USD")} a month · or{" "}
+                    {formatMoney(p.price!.USD.monthly, "USD")} billed monthly
                   </p>
                   <p className={`mt-5 text-sm font-medium ${p.featured ? "text-paper/80" : "text-ink/75"}`}>
                     {p.limits.users} · {p.limits.activeFlows}
